@@ -30,7 +30,7 @@ enum
 typedef unsigned int FILE_STAT_FLAGS;
 
 struct disk;
-typedef void*(*FS_OPEN_FUNCTION)(struct disk* disk, struct path_part* path, FILE_MODE mode);
+typedef void*(*FS_OPEN_FUNCTION)(struct disk* disk, struct path_part* path, FILE_MODE mode, uint8_t process_auth_level);
 typedef int (*FS_READ_FUNCTION)(struct disk* disk, void* private, uint32_t size, uint32_t nmemb, char* out);
 typedef int (*FS_RESOLVE_FUNCTION)(struct disk* disk);
 
@@ -75,7 +75,7 @@ struct file_descriptor
 
 
 void fs_init();
-int fopen(const char* filename, const char* mode_str);
+int fopen(const char* filename, const char* mode_str, uint8_t process_auth_level);
 int fseek(int fd, int offset, FILE_SEEK_MODE whence);
 int fread(void* ptr, uint32_t size, uint32_t nmemb, int fd);
 int fstat(int fd, struct file_stat* stat);

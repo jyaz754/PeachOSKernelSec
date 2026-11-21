@@ -3,6 +3,12 @@
 #include <stdint.h>
 #include "task.h"
 #include "config.h"
+enum process_auth_level
+    {
+        PROCESS_AUTH_RESTRICTED = 0,
+        PROCESS_AUTH_USER = 1,
+        PROCESS_AUTH_ADMIN = 2
+    };
 struct process
 {
     // The process id
@@ -25,6 +31,9 @@ struct process
     // The size of the data pointed to by "ptr"
     uint32_t size;
 
+    enum process_auth_level authLvl;
+    
+    
     struct keyboard_buffer
     {
         char buffer[PEACHOS_KEYBOARD_BUFFER_SIZE];
@@ -37,5 +46,5 @@ int process_load(const char* filename, struct process** process);
 int process_load_for_slot(const char* filename, struct process** process, int process_slot);
 struct process* process_current();
 struct process* process_get(int process_id);
-
+extern enum process_auth_level Usr_auth_level;
 #endif

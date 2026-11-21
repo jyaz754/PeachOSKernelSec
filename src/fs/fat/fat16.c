@@ -95,6 +95,8 @@ struct fat_item
         struct fat_directory *directory;
     };
 
+    uint8_t required_auth_level; // fat item for auth level here due to kernel item
+    // which makes access easier without hampering data collection
     FAT_ITEM_TYPE type;
 };
 
@@ -119,7 +121,7 @@ struct fat_private
 };
 
 int fat16_resolve(struct disk *disk);
-void *fat16_open(struct disk *disk, struct path_part *path, FILE_MODE mode);
+void *fat16_open(struct disk *disk, struct path_part *path, FILE_MODE mode, uint8_t auth_of_process);
 int fat16_read(struct disk *disk, void *descriptor, uint32_t size, uint32_t nmemb, char *out_ptr);
 int fat16_seek(void *private, uint32_t offset, FILE_SEEK_MODE seek_mode);
 int fat16_stat(struct disk* disk, void* private, struct file_stat* stat);
@@ -555,7 +557,7 @@ struct fat_item *fat16_new_fat_item_for_directory_item(struct disk *disk, struct
     {
         return 0;
     }
-
+    f_item-> required_auth_level = 0; // ADDED for sec this tells that the default for new fat items are 0 / open
     if (item->attribute & FAT_FILE_SUBDIRECTORY)
     {
         f_item->directory = fat16_load_fat_directory(disk, item);
@@ -612,7 +614,7 @@ out:
     return current_item;
 }
 
-void *fat16_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
+void *fat16_open(struct disk *disk, struct path_part *path, FILE_MODE mode, uint8_t auth_of_process)
 {
     if (mode != FILE_MODE_READ)
     {
@@ -631,7 +633,9 @@ void *fat16_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
     {
         return ERROR(-EIO);
     }
-
+    if (auth_of_process < descriptor->item->required_auth_level) {
+        return ERROR(-EIO); // EIO temp for when i add new error
+    }
     descriptor->pos = 0;
     return descriptor;
 }

@@ -23,6 +23,7 @@ uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
 uint16_t terminal_col = 0;
 
+
 uint16_t terminal_make_char(char c, char colour)
 {
     return (colour << 8) | c;
@@ -102,6 +103,7 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
 };
 void kernel_main()
 {
+    Usr_auth_level = PROCESS_AUTH_ADMIN; // make basic id to admin for loadup will change after initialization
     terminal_initialize();
     memset(gdt_real, 0x00, sizeof(gdt_real));
     gdt_structured_to_gdt(gdt_real, gdt_structured, PEACHOS_TOTAL_GDT_SEGMENTS);
@@ -140,7 +142,7 @@ void kernel_main()
 
     // Register the kernel commands
     isr80h_register_commands();
-
+    Usr_auth_level = PROCESS_AUTH_RESTRICTED; // set userId to open access. 
     // Initialize all the system keyboards
     keyboard_init();
     

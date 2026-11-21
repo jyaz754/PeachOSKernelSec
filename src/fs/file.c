@@ -7,9 +7,9 @@
 #include "fat/fat16.h"
 #include "status.h"
 #include "kernel.h"
+//#include "process.h" // to access the current process to test authorization
 struct filesystem* filesystems[PEACHOS_MAX_FILESYSTEMS];
 struct file_descriptor* file_descriptors[PEACHOS_MAX_FILE_DESCRIPTORS];
-
 static struct filesystem** fs_get_free_filesystem()
 {
     int i = 0;
@@ -125,7 +125,7 @@ FILE_MODE file_get_mode_by_string(const char* str)
     return mode;
 }
 
-int fopen(const char* filename, const char* mode_str)
+int fopen(const char* filename, const char* mode_str, uint8_t process_auth_level)
 {
     int res = 0;
     struct path_root* root_path = pathparser_parse(filename, NULL);
@@ -162,9 +162,11 @@ int fopen(const char* filename, const char* mode_str)
         res = -EINVARG;
         goto out;
     }
-
-    void* descriptor_private_data = disk->filesystem->open(disk, root_path->first, mode);
-    if (ISERR(descriptor_private_data))
+    //struct process* curProcess = process_current();
+    //uint8_t process_auth_level = curProcess -> authLvl; //gets the authLvl from the current process
+    
+    void* descriptor_private_data = disk->filesystem->open(disk, root_path->first, mode, process_auth_level);
+    if (ISERR(descriptor_private_data)) // send it in the open function in fat16.c
     {
         res = ERROR_I(descriptor_private_data);
         goto out;
@@ -176,6 +178,7 @@ int fopen(const char* filename, const char* mode_str)
     {
         goto out;
     }
+    
     desc->filesystem = disk->filesystem;
     desc->private = descriptor_private_data;
     desc->disk = disk;
