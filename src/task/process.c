@@ -8,7 +8,7 @@
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
 #include "kernel.h"
-uint8_t usr_auth_level = 2;
+uint8_t usr_auth_level = 0;
 // The current process that is running
 struct process* current_process = 0;
 
