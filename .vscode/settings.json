@@ -3,5 +3,6 @@
         "*.tcc": "c",
         "algorithm": "c",
         "fstream": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

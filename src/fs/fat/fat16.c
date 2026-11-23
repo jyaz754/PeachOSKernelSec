@@ -557,11 +557,22 @@ struct fat_item *fat16_new_fat_item_for_directory_item(struct disk *disk, struct
     {
         return 0;
     }
+    char temp_filename[13];
+    fat16_get_full_relative_filename(item, temp_filename, sizeof(temp_filename));
     f_item-> required_auth_level = 0; // ADDED for sec this tells that the default for new fat items are 0 / open
-    if (item->attribute & FAT_FILE_SUBDIRECTORY)
+    // basically a hardcode of permissions for files. It goes down from admin priv (secret) to user (regualr)
+    // and lastly hello which is normal priv
+    if (istrncmp(temp_filename, "SECRET.TXT", sizeof(temp_filename)) == 0)
     {
-        f_item->directory = fat16_load_fat_directory(disk, item);
-        f_item->type = FAT_ITEM_TYPE_DIRECTORY;
+        f_item->required_auth_level = 2;
+    }
+    else if (istrncmp(temp_filename, "REGULAR.TXT", sizeof(temp_filename)) == 0)
+    {
+        f_item->required_auth_level = 1;
+    }
+    else if (istrncmp(temp_filename, "HELLO.TXT", sizeof(temp_filename)) == 0)
+    {
+        f_item->required_auth_level = 0;
     }
 
     f_item->type = FAT_ITEM_TYPE_FILE;
@@ -620,7 +631,6 @@ void *fat16_open(struct disk *disk, struct path_part *path, FILE_MODE mode, uint
     {
         return ERROR(-ERDONLY);
     }
-
     struct fat_file_descriptor *descriptor = 0;
     descriptor = kzalloc(sizeof(struct fat_file_descriptor));
     if (!descriptor)

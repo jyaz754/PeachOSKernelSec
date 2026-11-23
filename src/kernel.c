@@ -103,7 +103,7 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
 };
 void kernel_main()
 {
-    Usr_auth_level = PROCESS_AUTH_ADMIN; // make basic id to admin for loadup will change after initialization
+    usr_auth_level = 2; // make basic id to admin for loadup will change after initialization
     terminal_initialize();
     memset(gdt_real, 0x00, sizeof(gdt_real));
     gdt_structured_to_gdt(gdt_real, gdt_structured, PEACHOS_TOTAL_GDT_SEGMENTS);
@@ -142,18 +142,112 @@ void kernel_main()
 
     // Register the kernel commands
     isr80h_register_commands();
-    Usr_auth_level = PROCESS_AUTH_RESTRICTED; // set userId to open access. 
+    
     // Initialize all the system keyboards
     keyboard_init();
-    
-    struct process* process = 0;
-    int res = process_load("0:/blank.bin", &process);
-    if (res != PEACHOS_ALL_OK)
-    {
-        panic("Failed to load blank.bin\n");
+    // COMMENTED OUT SO I COULD USE TERMINAL WRITECHAR
+    //struct process* process = 0;
+    //int res = process_load("0:/blank.bin", &process);
+    //if (res != PEACHOS_ALL_OK)
+    //{
+    //    panic("Failed to load blank.bin\n");
+    //}
+
+    //task_run_first_ever_task();
+    usr_auth_level = 0; // set userId to open access. 
+    void print_output_process(int varOut, char charname) {
+        if (varOut != 0) {
+            terminal_writechar(charname, 0x0F);
+            terminal_writechar(' ', 0x0F);
+            terminal_writechar('D', 0x0F);
+            terminal_writechar('E', 0x0F);
+            terminal_writechar('N', 0x0F);
+            terminal_writechar('I', 0x0F);
+            terminal_writechar('E', 0x0F);
+            terminal_writechar('D', 0x0F);
+            terminal_writechar('|', 0x8F);
+        }
+        else {
+            terminal_writechar(charname, 0x0F);
+            terminal_writechar(' ', 0x0F);
+            terminal_writechar('A', 0x0F);
+            terminal_writechar('L', 0x0F);
+            terminal_writechar('L', 0x0F);
+            terminal_writechar('O', 0x0F);
+            terminal_writechar('W', 0x0F);
+            terminal_writechar('E', 0x0F);
+            terminal_writechar('D', 0x0F);
+            terminal_writechar('|', 0x8F);
+        }
+        terminal_writechar('\n', 0x0F);
+    }
+    void print_output_open(int varOut, char charname) {
+        if (varOut == 0) {
+            terminal_writechar(charname, 0x0F);
+            terminal_writechar(' ', 0x0F);
+            terminal_writechar('D', 0x0F);
+            terminal_writechar('E', 0x0F);
+            terminal_writechar('N', 0x0F);
+            terminal_writechar('I', 0x0F);
+            terminal_writechar('E', 0x0F);
+            terminal_writechar('D', 0x0F);
+            terminal_writechar('|', 0x8F);
+        }
+        else {
+            terminal_writechar(charname, 0x0F);
+            terminal_writechar(' ', 0x0F);
+            terminal_writechar('A', 0x0F);
+            terminal_writechar('L', 0x0F);
+            terminal_writechar('L', 0x0F);
+            terminal_writechar('O', 0x0F);
+            terminal_writechar('W', 0x0F);
+            terminal_writechar('E', 0x0F);
+            terminal_writechar('D', 0x0F);
+            terminal_writechar('|', 0x8F);
+        }
+        terminal_writechar('\n', 0x0F);
     }
 
-    task_run_first_ever_task();
+    struct process* test_process = 0;
+
+    int a = process_load("0:/blank.bin", &test_process);
+    int x = fopen("0:/secret.txt", "r", usr_auth_level);
+    int y = fopen("0:/regular.txt", "r", usr_auth_level);
+    int z = fopen("0:/hello.txt", "r", usr_auth_level);
+    terminal_writechar('\n', 0x0F);
+    terminal_writechar('0', 0x0F);
+    terminal_writechar('\n', 0x0F);
+    print_output_process(a, 'a');
+    print_output_open(x, 'x');
+    print_output_open(y, 'y');
+    print_output_open(z, 'z');
+    
+    usr_auth_level = 1;
+    a = process_load("0:/blank.bin", &test_process);
+    x = fopen("0:/secret.txt", "r", usr_auth_level);
+    y = fopen("0:/regular.txt", "r", usr_auth_level);
+    z = fopen("0:/hello.txt", "r", usr_auth_level);
+    terminal_writechar('\n', 0x0F);
+    terminal_writechar('1', 0x0F);
+    terminal_writechar('\n', 0x0F);
+    print_output_process(a, 'a');
+    print_output_open(x, 'x');
+    print_output_open(y, 'y');
+    print_output_open(z, 'z');
+
+    usr_auth_level = 2;
+    a = process_load("0:/blank.bin", &test_process);
+    x = fopen("0:/secret.txt", "r", usr_auth_level);
+    y = fopen("0:/regular.txt", "r", usr_auth_level);
+    z = fopen("0:/hello.txt", "r", usr_auth_level);
+    terminal_writechar('\n', 0x0F);
+    terminal_writechar('2', 0x0F);
+    terminal_writechar('\n', 0x0F);
+    print_output_process(a, 'a');
+    print_output_open(x, 'x');
+    print_output_open(y, 'y');
+    print_output_open(z, 'z');
+    
 
     while(1) {}
 }

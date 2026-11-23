@@ -8,7 +8,7 @@
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
 #include "kernel.h"
-enum process_auth_level Usr_auth_level = PROCESS_AUTH_RESTRICTED;
+uint8_t usr_auth_level = 2;
 // The current process that is running
 struct process* current_process = 0;
 
@@ -17,7 +17,7 @@ static struct process* processes[PEACHOS_MAX_PROCESSES] = {};
 static void process_init(struct process* process)
 {
     memset(process, 0, sizeof(struct process));
-    process->authLvl = Usr_auth_level; // on initialization of the process, set
+    process->authLvl = usr_auth_level; // on initialization of the process, set
     // default auth level to restricted / least authroity
 }
 
