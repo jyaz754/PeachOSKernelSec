@@ -1,13 +1,13 @@
 # PeachOS Kernel Security
 
 ## Project Overview
-PeachOS is a bare-bones operating system derived from repository https://github.com/nibblebits/PeachOS/commit/bc0d8a86197686df9b3ec25ce036508fee412221. This repository is an fork of the nibblebits repoistory to add security features to the design. THis repoisitory focuses kernel level access control, with a focus on file / process authorization and principle of least privelege.
+PeachOS is a bare-bones operating system derived from repository https://github.com/nibblebits/PeachOS/commit/bc0d8a86197686df9b3ec25ce036508fee412221. This repository is an fork of the nibblebits repository to add security features to the design. This repository focuses kernel level access control, with a focus on file / process authorization and principle of least privilege.
 
 ## Features
 - Process authorization levels
 - File access restrictions
 - Filesystem permission checks
-- 3 basic file permissions (hardcoded with examples)
+- 3 basic file permissions (hard coded with examples)
 - example of the different file permission locks working with terminal output
 
 ## Example
@@ -28,9 +28,9 @@ first need to download qemu
 - should also install build-essential, bison, flex, libgmp-dev, libmpc-dev, libmpfr-dev, and texinfo
 - ./build.sh
 - qemu-system-i386 -hda ./bin/os.bin
-make sure to be in root directory while doing these commands
+- make sure to be in root directory while doing these commands
 
 # How to run once installed
 - after every change do ./build.sh
-- then run qemu-system-i386 -hda ./bin/os.bin
+- then run: qemu-system-i386 -hda ./bin/os.bin
 
